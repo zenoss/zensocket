@@ -7,6 +7,7 @@ Group:		zenoss
 License:	Commercial
 URL:		http://www.zenoss.com/
 Source:		%{name}-%{version}.tar.gz
+Prefix:		/usr
 
 %description
 Zenoss needs to have root permissions to open some sockets, but we
@@ -32,11 +33,11 @@ Alternatively, access to a ping socket is available like this:
 make %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}%{_bindir}/
-cp -p zensocket %{buildroot}%{_bindir}
+mkdir -p %{buildroot}/usr/bin/
+cp -p zensocket %{buildroot}/usr/bin/
 
 %files
-%attr(4755, root, root) %{_bindir}/zensocket
+%attr(4755, root, root) /usr/bin/zensocket
 
 %changelog
 
