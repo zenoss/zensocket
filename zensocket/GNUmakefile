@@ -19,5 +19,14 @@ build: $(PROGRAM)
 clean:
 	rm -rf $(PROGRAM)
 
+$(DESTDIR)/bin:
+	mkdir -p $(DESTDIR)/bin
+
+install: $(DESTDIR)/bin
+	cp -p zensocket $(DESTDIR)/bin/zensocket
+
+uninstall:
+	rm -f $(DESTDIR)/bin/zensocket
+
 $(PROGRAM): zensocket.c
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $<

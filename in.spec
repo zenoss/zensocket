@@ -1,5 +1,5 @@
 Name:		zensocket
-Version:	1.0.0
+Version:	@@VERSION@@
 Release:	1%{?dist}
 Summary:	zensocket provides the ability to open sockets with root priviledges
 
@@ -7,7 +7,7 @@ Group:		zenoss
 License:	Commercial
 URL:		http://www.zenoss.com/
 Source:		%{name}-%{version}.tar.gz
-Prefix:		/usr
+Prefix:		@@PREFIX@@
 
 %description
 Zenoss needs to have root permissions to open some sockets, but we
@@ -33,11 +33,10 @@ Alternatively, access to a ping socket is available like this:
 make %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}/usr/bin/
-cp -p zensocket %{buildroot}/usr/bin/
+make install DESTDIR=%{buildroot}@@PREFIX@@
 
 %files
-%attr(4755, root, root) /usr/bin/zensocket
+%attr(4755, root, root) @@PREFIX@@/bin/zensocket
 
 %changelog
 
