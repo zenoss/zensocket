@@ -1,10 +1,10 @@
 /*****************************************************************************
- * 
+ *
  * Copyright (C) Zenoss, Inc. 2007, all rights reserved.
- * 
+ *
  * This content is made available according to terms specified in
  * License.zenoss under the directory where your Zenoss product is installed.
- * 
+ *
  ****************************************************************************/
 
 
@@ -106,7 +106,7 @@ static in_addr_t getAddress(const char *interface) {
     return INADDR_ANY;
   }
 
-  return htonl( ((a & 0xff) << 24) | ((b & 0xff) << 16) | 
+  return htonl( ((a & 0xff) << 24) | ((b & 0xff) << 16) |
                 ((c & 0xff) << 8)  |  (d & 0xff) );
 }
 
@@ -145,7 +145,6 @@ int main(int argc, char **argv) {
   int i, c;
   int ping = 0;
   int listen = 0;
-  char * proto = NULL;
   int proto_sock = SOCK_DGRAM;
   const char * interface = 0;
   unsigned short port = 0;
@@ -155,7 +154,7 @@ int main(int argc, char **argv) {
   int max_index = -1;
   struct socket_options_set so_setting[ZEN_MAX_SO_OPTIONS];
   int bind_ipv6_status;
-  
+
   if (geteuid() != 0) {
     error("zensocket needs to be run as root or setuid");
   }
@@ -164,7 +163,7 @@ int main(int argc, char **argv) {
     usage("zensocket");
   }
 
-  
+
   while (1) {
     int option_index = 0;
     int c = getopt_long(argc, argv, "", options, &option_index);
@@ -192,7 +191,6 @@ int main(int argc, char **argv) {
         else {
           error("proto should be either tcp or udp");
         }
-        proto = optarg;
       }
 
       /* port option */
@@ -204,7 +202,7 @@ int main(int argc, char **argv) {
           interface = optarg;
           portString = colon + 1;
         }
-   
+
         port = atol(portString);
         if (port == 0) {
           error("Unable to use port number");
@@ -248,16 +246,16 @@ int main(int argc, char **argv) {
 	    error("Unable to create ping socket");
   }
   else if (listen) {
-    
+
     if (interface && strcmp(interface, "ipv6") == 0) {
-    
+
       bind_ipv6_status = bind_ipv6_socket(proto_sock, port, &sock);
       if (bind_ipv6_status) {
         error("Failed to bind IPv6 socket: %s", strerror(errno));
       }
-    
+
     } else {
-      
+
       int reuse_addr = 1;
       struct sockaddr_in addr;
       int so_option, so_value;
@@ -291,9 +289,9 @@ int main(int argc, char **argv) {
         close(sock);
         error("Unable to bind to listen port (error code %d)", errno);
       }
-      
+
     }
-  
+
   }
 
   /* No need to be root any more */
@@ -306,7 +304,7 @@ int main(int argc, char **argv) {
   if (optind >= argc) {
     usage(argv[0]);
   }
-  
+
   sprintf(filenoString, "%d", sock);
   if (strlen(filenoString) > strlen(replace)) {
     error("What are you up to?");

@@ -1,11 +1,13 @@
 .PHONY: all sdist dist rpm
 
+ARCHITECTURE = $(shell uname -m)
 PROJECT = zensocket
-SOURCES = ~/rpmbuild/SOURCES
+TOPDIR = rpmbuild
+SOURCES = $(TOPDIR)/SOURCES
 VERSION = 1.0.0
 PREFIX = /usr
 SOURCE_TAR = $(SOURCES)/$(PROJECT)-$(VERSION).tar.gz
-DIST_TAR = $(PROJECT)-$(VERSION)-`uname -m`.tar.gz
+DIST_TAR = $(PROJECT)-$(VERSION)-$(ARCHITECTURE).tar.gz
 DESTDIR=$(shell pwd)/install
 
 all: dist
@@ -14,27 +16,25 @@ sdist: $(SOURCE_TAR)
 
 dist: $(DIST_TAR)
 
-$(PROJECT).spec: in.spec
-	sed in.spec -e 's/@@VERSION@@/$(VERSION)/' | sed -e 's/@@PREFIX@@/$(subst /,\/,$(PREFIX))/' >| $(PROJECT).spec
-
 rpm: sdist $(PROJECT).spec
-	rpmbuild -ba $(PROJECT).spec
+	rpmbuild --define "_topdir $(PWD)/$(TOPDIR)" -ba $(PROJECT).spec
 
-$(SOURCES):
-	mkdir -p $(SOURCES)
+$(PROJECT).spec: in.spec
+	sed $< \
+		-e 's/@@VERSION@@/$(VERSION)/' \
+		-e 's/@@PREFIX@@/$(subst /,\/,$(PREFIX))/' \
+		> $@
 
-$(SOURCE_TAR): $(SOURCES)
-	tar czf $(SOURCE_TAR) $(PROJECT)
+$(SOURCES) $(DESTDIR):
+	mkdir -p $@
 
-$(DESTDIR):
-	mkdir -p $(DESTDIR)
+$(SOURCE_TAR): | $(SOURCES)
+	tar czf $@ $(PROJECT)
 
-$(DIST_TAR): $(DESTDIR)
-	cd $(PROJECT) && make uninstall clean build install DESTDIR=$(DESTDIR)
+$(DIST_TAR): | $(DESTDIR)
+	make -C $(PROJECT) uninstall clean build install DESTDIR=$(DESTDIR)
 	tar czf $(DIST_TAR) -C install .
 
 clean:
-	rm -rf $(DESTDIR)
-	rm -f $(DIST_TAR)
-	rm -f $(SOURCE_TAR)
-	rm -f $(PROJECT).spec
+	@rm -vrf $(DESTDIR) $(TOPDIR)
+	@rm -vf $(DIST_TAR) $(SOURCE_TAR) $(PROJECT).spec

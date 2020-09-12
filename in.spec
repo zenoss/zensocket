@@ -5,7 +5,7 @@ Summary:	zensocket provides the ability to open sockets with root priviledges
 
 Group:		zenoss
 License:	Commercial
-URL:		http://www.zenoss.com/
+URL:		https://www.zenoss.com/
 Source:		%{name}-%{version}.tar.gz
 Prefix:		@@PREFIX@@
 
