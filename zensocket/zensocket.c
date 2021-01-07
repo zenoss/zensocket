@@ -296,7 +296,9 @@ int main(int argc, char **argv) {
 
   /* No need to be root any more */
   if (getuid() != 0) {
-      setuid(getuid());
+	  if (setuid(getuid()) != 0) {
+		  error("Unable to switch user from root (error code %d)", errno);
+	  }
   } else {
       error("Unable to find a user to become");
   }
@@ -327,14 +329,14 @@ int main(int argc, char **argv) {
 
   args[c] = 0;
   {
-      char libdir[1000];
-      snprintf(libdir, sizeof(libdir)-1, "LD_LIBRARY_PATH=%s/lib", getenv("ZENHOME"));
-      if (putenv(libdir) != 0) {
-	  perror("Unable to set LD_LIBRARY_PATH");
-      }
-      if (execv(args[0], args) < 0) {
-	perror("exec fails");
-      }
+    char libdir[1000];
+    snprintf(libdir, sizeof(libdir)-1, "LD_LIBRARY_PATH=%s/lib", getenv("ZENHOME"));
+    if (putenv(libdir) != 0) {
+      error("Unable to set LD_LIBRARY_PATH");
+    }
+    if (execv(args[0], args) < 0) {
+	  error("exec fails");
+    }
   }
 
   free(args);

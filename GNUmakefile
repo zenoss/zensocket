@@ -1,14 +1,14 @@
 .PHONY: all sdist dist rpm
 
-ARCHITECTURE = $(shell uname -m)
-PROJECT = zensocket
-TOPDIR = rpmbuild
-SOURCES = $(TOPDIR)/SOURCES
-VERSION = 1.0.0
-PREFIX = /usr
+ARCH       = $(shell uname -m)
+PROJECT    = zensocket
+TOPDIR     = rpmbuild
+SOURCES    = $(TOPDIR)/SOURCES
+PREFIX     = /usr
+VERSION    = $(shell cat VERSION)
 SOURCE_TAR = $(SOURCES)/$(PROJECT)-$(VERSION).tar.gz
-DIST_TAR = $(PROJECT)-$(VERSION)-$(ARCHITECTURE).tar.gz
-DESTDIR=$(shell pwd)/install
+DIST_TAR   = $(PROJECT)-$(VERSION)-$(ARCH).tar.gz
+DESTDIR    = $(shell pwd)/install
 
 all: dist
 
@@ -33,8 +33,9 @@ $(SOURCE_TAR): | $(SOURCES)
 
 $(DIST_TAR): | $(DESTDIR)
 	make -C $(PROJECT) uninstall clean build install DESTDIR=$(DESTDIR)
-	tar czf $(DIST_TAR) -C install .
+	tar czf $(DIST_TAR) -C $(DESTDIR) bin
 
 clean:
 	@rm -vrf $(DESTDIR) $(TOPDIR)
 	@rm -vf $(DIST_TAR) $(SOURCE_TAR) $(PROJECT).spec
+	@make -C $(PROJECT) clean
