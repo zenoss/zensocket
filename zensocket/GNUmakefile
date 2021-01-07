@@ -1,16 +1,16 @@
 .PHONY: all build clean
 
-ifeq ($(shell uname), SunOS)
-	CC=cc
-	CFLAGS=-g
-	LDFLAGS=-lsocket
+ifeq ($(shell uname),SunOS)
+CC      = cc
+CFLAGS  = -g
+LDFLAGS = -lsocket
 else
-	CC=gcc
-	CFLAGS=-Wall -pedantic -D__GNU_LIBRARY__ -g
-	LDFLAGS=
+CC      = gcc
+CFLAGS  = -O2 -Wall -Wextra -pedantic -D__GNU_LIBRARY__ -g
+LDFLAGS =
 endif
 
-PROGRAM=zensocket
+PROGRAM = zensocket
 
 all: build
 
@@ -19,14 +19,17 @@ build: $(PROGRAM)
 clean:
 	rm -rf $(PROGRAM)
 
+install: $(DESTDIR)/bin/$(PROGRAM)
+	chmod 550 $<
+
+uninstall:
+	rm -f $(DESTDIR)/bin/$(PROGRAM)
+
 $(DESTDIR)/bin:
 	mkdir -p $(DESTDIR)/bin
 
-install: $(DESTDIR)/bin
-	cp -p zensocket $(DESTDIR)/bin/zensocket
+$(DESTDIR)/bin/$(PROGRAM): $(PROGRAM) | $(DESTDIR)/bin
+	cp -p $< $@
 
-uninstall:
-	rm -f $(DESTDIR)/bin/zensocket
-
-$(PROGRAM): zensocket.c
+$(PROGRAM): %: %.c
 	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) $<
