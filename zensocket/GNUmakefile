@@ -1,4 +1,4 @@
-.PHONY: all build clean
+.PHONY: build clean install uninstall
 
 ifeq ($(shell uname),SunOS)
 CC      = cc

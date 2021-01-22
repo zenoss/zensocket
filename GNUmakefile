@@ -17,19 +17,19 @@ sdist: $(SOURCE_TAR)
 dist: $(DIST_TAR)
 
 rpm: sdist $(PROJECT).spec
-	rpmbuild --define "_topdir $(PWD)/$(TOPDIR)" -ba $(PROJECT).spec
+	rpmbuild -v --define "_topdir $(PWD)/$(TOPDIR)" -ba $(PROJECT).spec
 
 $(PROJECT).spec: in.spec
-	sed $< \
+	@sed $< \
 		-e 's/@@VERSION@@/$(VERSION)/' \
 		-e 's/@@PREFIX@@/$(subst /,\/,$(PREFIX))/' \
 		> $@
 
 $(SOURCES) $(DESTDIR):
-	mkdir -p $@
+	@mkdir -vp $@
 
 $(SOURCE_TAR): | $(SOURCES)
-	tar czf $@ $(PROJECT)
+	@tar czf $@ $(PROJECT)
 
 $(DIST_TAR): | $(DESTDIR)
 	make -C $(PROJECT) uninstall clean build install DESTDIR=$(DESTDIR)
